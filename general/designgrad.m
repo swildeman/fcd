@@ -38,6 +38,12 @@ else
     roi = logical(roi);
 end
 
+if isa(roi, 'gpuArray')
+    create_cls = 'gpuArray';
+else
+    create_cls = 'double';
+end
+
 % treat border same as masked areas
 roi = padarray(roi,[1,1],false);
 
@@ -47,14 +53,14 @@ roi = padarray(roi,[1,1],false);
 N = sum(roi(:));
 
 % linear index in masked image (skipping mask positions in numbering)
-linInd = zeros(IRows,ICols);
+linInd = zeros(IRows,ICols,create_cls);
 linInd(roi) = 1:N;
 
 % init vectors for holding the row and column positions of design matrix entries
 % (2 positions for each pixel)
-rowDM = zeros(N,3);
-colDM = zeros(N,3);
-valDM = zeros(N,3);
+rowDM = zeros(N,3,create_cls);
+colDM = zeros(N,3,create_cls);
+valDM = zeros(N,3,create_cls);
 
 % keep track of possition in the entry lists we are filling
 cur = 1;
