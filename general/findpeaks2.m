@@ -16,10 +16,6 @@ function [ r, c, vals ] = findpeaks2( A, thresh, n, subpixel  )
 
 [rows,cols] = size(A);
 
-% set border pixels to zero to prevent finding false peaks at the border
-%A([1 end],:) = 0;
-%A(:, [1,end]) = 0;
-
 % threshold
 peakRegions = bwconncomp(A > thresh);
 
