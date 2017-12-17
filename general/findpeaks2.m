@@ -17,8 +17,8 @@ function [ r, c, vals ] = findpeaks2( A, thresh, n, subpixel  )
 [rows,cols] = size(A);
 
 % set border pixels to zero to prevent finding false peaks at the border
-A([1 end],:) = 0;
-A(:, [1,end]) = 0;
+%A([1 end],:) = 0;
+%A(:, [1,end]) = 0;
 
 % threshold
 peakRegions = bwconncomp(A > thresh);
@@ -32,17 +32,27 @@ for ii = 1:peakRegions.NumObjects
     inds(ii) = ids(regionalMaxId);
 end
 
+% convert to subscripts
+[r, c] = ind2sub([rows,cols], inds);
+
+% disregard peaks on border
+borderpks = (r == 1) | (r == rows) | (c == 1) | (c == cols);
+r(borderpks) = [];
+c(borderpks) = [];
+inds(borderpks) = [];
+vals(borderpks) = [];
+
 % sort from high to low
 [vals,order] = sort(vals,'descend');
 inds = inds(order);
+r = r(order);
+c = c(order);
 
 % select n largest
 if n < numel(inds)
    inds = inds(1:n);
    vals = vals(1:n);
 end
-
-[r, c] = ind2sub([rows,cols], inds);
 
 if(subpixel)
     lv = A(inds-rows);
