@@ -22,6 +22,7 @@ function [kr, ku] = findorthcarrierpks( Iref, kmin, kmax, thresh )
 
 [rows, cols] = size(Iref);
 Iref = double(Iref);
+Iref = Iref - mean(Iref(:));
 
 wr = hamming(rows,'periodic');
 wc = hamming(cols,'periodic');
