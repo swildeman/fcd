@@ -3,6 +3,9 @@ function [ ph ] = unwrap2( ph_w, roi )
 %
 % Based on: V. Volkov and Y. Zhu, Deterministic phase unwrapping in the
 % presence of noise, Opt. Lett. (2003)
+%
+% Copyright (c) 2018 Sander Wildeman
+% Distributed under the MIT License, see LICENSE file
 
 if nargin < 2
    hasroi = false;
