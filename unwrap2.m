@@ -36,20 +36,23 @@ end
 % auxiliary complex function without phase jumps
 Z = exp(1i*ph_w);
 
-% calculate some second order finite differences
+% calculate derivatives
 if hasroi
+    % use central difference
     [Dx,Dy] = designgrad(roi);
     phx_w = Dx*ph_w;
     phy_w = Dy*ph_w;
     phx = Dx*Z;
     phy = Dy*Z;
-else    
-    Dx = designgrad1D(Nx);
-    Dy = designgrad1D(Ny);
-    phx_w = (Dx*ph_w.').';
-    phy_w = Dy*ph_w;
-    phx = (Dx*Z.').';
-    phy = Dy*Z;
+else
+    % perform differentiation in fourier domain
+    [KX,KY] = meshgrid(kvec(Nx),kvec(Ny));
+    fph_w = fft2(ph_w);
+    phx_w = real(ifft2(1i*KX.*fph_w));
+    phy_w = real(ifft2(1i*KY.*fph_w));
+    fZ = fft2(Z);
+    phx = ifft2(1i*KX.*fZ);
+    phy = ifft2(1i*KY.*fZ);
 end
 
 % Volkov&Zhu's trick to calculate location of phase jumps using the
@@ -62,7 +65,7 @@ jy = phy-phy_w;
 if hasroi % integrate by matrix inversion
   j = [0;[Dx(:,2:end);Dy(:,2:end)] \ [jx;jy]];
 else % integrate in fourier domain
-  j = fftinvgrad(jx,jy,'gradtype','diff');
+  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','none');
 end
 
 % make sure correction is integer number of 2pi 
