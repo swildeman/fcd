@@ -1,14 +1,26 @@
 function [ ph ] = unwrap2( ph_w, roi )
-%UNWRAP2 unwrap 2D phase map
+%UNWRAP2 unwrap a 2D phase map
 %
-% Based on: V. Volkov and Y. Zhu, Deterministic phase unwrapping in the
+% SYNOPSIS: ph = unwrap2( ph_w, [roi] )
+% 
+% INPUT ph_w: 2D wrapped phase map (phase map with 2*pi discontinuities)
+%       roi:  (optional) binary ROI matrix of same size as ph_w 
+%             (true = valid region, false = masked region). 
+%
+% OUTPUT ph: Unwrapped phase map 
+%
+% REMARK If a ROI is specified, a slower real space (instead of FFT) 
+%        inversion is used in the unwrap algorithm.
+%
+% REFERENCE: V. Volkov and Y. Zhu, Deterministic phase unwrapping in the
 % presence of noise, Opt. Lett. (2003)
+%
 %
 % Copyright (c) 2018 Sander Wildeman
 % Distributed under the MIT License, see LICENSE file
 
 if nargin < 2
-   hasroi = false;
+   hasroi = false; % flag to determine which integration method to use
 else
    hasroi = true;
 end
@@ -21,10 +33,10 @@ if hasroi
    ph_w = ph_w(roi);
 end
 
-% auxilary function
+% auxiliary complex function without phase jumps
 Z = exp(1i*ph_w);
 
-% second order finite difference
+% calculate some second order finite differences
 if hasroi
     [Dx,Dy] = designgrad(roi);
     phx_w = Dx*ph_w;
@@ -40,7 +52,8 @@ else
     phy = Dy*Z;
 end
 
-% Volkov&Zhu's trick to calculate location of phase jumps
+% Volkov&Zhu's trick to calculate location of phase jumps using the
+% auxiliary function
 phx = real(phx./(1i*Z));
 phy = real(phy./(1i*Z));
 jx = phx-phx_w;
