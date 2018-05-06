@@ -71,7 +71,7 @@ jy = phy-phy_w;
 if hasroi % integrate by matrix inversion
   j = [0;[Dx(:,2:end);Dy(:,2:end)] \ [jx;jy]];
 else % integrate in fourier domain
-  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','mir');
+  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','imp');
 %   j = fftinvgrad(jx,jy,'gradtype','diff','bcfix','imp');
 end
 
