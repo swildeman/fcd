@@ -45,6 +45,12 @@ if hasroi
     phx = Dx*Z;
     phy = Dy*Z;
 else
+%     Dx = designgrad1D(Nx);
+%     Dy = designgrad1D(Ny);
+%     phx_w = (Dx*ph_w.').';
+%     phy_w = Dy*ph_w;
+%     phx = (Dx*Z.').';
+%     phy = Dy*Z;
     % perform differentiation in fourier domain
     [KX,KY] = meshgrid(kvec(Nx),kvec(Ny));
     fph_w = fft2(ph_w);
@@ -65,7 +71,8 @@ jy = phy-phy_w;
 if hasroi % integrate by matrix inversion
   j = [0;[Dx(:,2:end);Dy(:,2:end)] \ [jx;jy]];
 else % integrate in fourier domain
-  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','none');
+  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','mir');
+%   j = fftinvgrad(jx,jy,'gradtype','diff','bcfix','imp');
 end
 
 % make sure correction is integer number of 2pi 
