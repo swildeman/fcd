@@ -1,4 +1,4 @@
-function [kr, ku] = findorthcarrierpks( Iref, kmin, kmax, thresh )
+function [kr, ku] = findorthcarrierpks( Iref, kmin, kmax, thresh, usehamming )
 %FINDORTHCARRIERPKS Find two orthogonal carrier peaks in k-space from a
 %reference checkerboard (or otherwise 2D periodic) pattern (with sub-fft-bin
 %precision)
@@ -24,12 +24,15 @@ function [kr, ku] = findorthcarrierpks( Iref, kmin, kmax, thresh )
 Iref = double(Iref);
 Iref = Iref - mean(Iref(:));
 
-wr = hamming(rows,'periodic');
-wc = hamming(cols,'periodic');
-w2d = wr(:)*wc(:)';
-
-% get blurred 2d fft
-f_h = abs(fftshift(fft2(Iref.*w2d)));
+if nargin < 5 || usehamming
+    wr = hamming(rows,'periodic');
+    wc = hamming(cols,'periodic');
+    w2d = wr(:)*wc(:)';
+    % get blurred 2d fft
+    f_h = abs(fftshift(fft2(Iref.*w2d)));
+else
+    f_h = abs(fftshift(fft2(Iref)));
+end
 
 % get k-space coordinates
 kx = fftshift(kvec(cols));
@@ -48,6 +51,7 @@ if(nargin < 4)
 else
     thresh = thresh*max(f_h(:));
 end
+
 [peakrows,peakcols] = findpeaks2(f_h, thresh, 4, true); % subpixel accuracy
 
 if numel(peakrows) < 4
