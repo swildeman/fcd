@@ -71,12 +71,24 @@ jy = phy-phy_w;
 if hasroi % integrate by matrix inversion
   j = [0;[Dx(:,2:end);Dy(:,2:end)] \ [jx;jy]];
 else % integrate in fourier domain
-  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','imp');
-%   j = fftinvgrad(jx,jy,'gradtype','diff','bcfix','imp');
+  j = fftinvgrad(jx,jy,'gradtype','spectral','bcfix','none');
+%   j = fftinvgrad(jx,jy,'gradtype','diff','bcfix','none');
+  j = j-j(floor(end/2),floor(end/2)); % arbitraly set midpoint to be zero
 end
 
-% make sure correction is integer number of 2pi 
-j = 2*pi*round(j/(2*pi));
+% make sure correction is integer number of 2pi with most values being at 0
+j = round(j/(2*pi));
+
+% start counting from 1
+minj = min(j(:));
+j = j-minj+1; 
+
+% count number of occurences of each jump value
+cnt = accumarray(j(:),1);
+
+% set largest part of phase jumps to 0
+[~,mxcntj] = max(cnt);
+j = (j-mxcntj)*2*pi;
 
 % unwrap phase
 if hasroi
