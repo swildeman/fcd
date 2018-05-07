@@ -21,15 +21,19 @@ function [ u, v ] = fcd_dispfield( fftIdef, cr, cu, tryunwrap )
 % Copyright (c) 2017 Sander Wildeman
 % Distributed under the MIT License, see LICENSE file
 
-if nargin < 4
-   tryunwrap = false; 
-end
-
 % (1) extract phase modulation from carrier peaks in deformed image
 phi_r = fcd_phasefield(fftIdef, cr);  % phi_r = cr.k(:)' * (u;v)
 phi_u = fcd_phasefield(fftIdef, cu);  % phi_u = cu.k(:)' * (u;v)
 
 % (2, optional) unwrap the phases
+if nargin < 4
+    if all(phi_r(:) < 3) && all(phi_u(:) < 3)
+        tryunwrap = false;
+    else
+        tryunwrap = true; 
+    end
+end
+
 if tryunwrap
     phi_r = unwrap2(phi_r);
     phi_u = unwrap2(phi_u);
