@@ -93,7 +93,7 @@ preview(vid, iRaw)
         axFFT.CLim = [0,max(absFFT(:))/50];
         
         % profile
-        [u,v] = fcd_dispfield(fft2(Idef), cr, cu);
+        [u,v] = fcd_dispfield(fft2(Idef), cr, cu, false);
         nrmU = sqrt(u.^2+v.^2);
         iH.CData = nrmU;
         

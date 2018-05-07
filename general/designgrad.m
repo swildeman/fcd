@@ -93,6 +93,10 @@ rowDM(cur:cur+npx-1,:) = [linInd(pxind), linInd(pxind),linInd(pxind)];
 colDM(cur:cur+npx-1,:) = [linInd(pxind-IRows),linInd(pxind), linInd(pxind+IRows)];
 valDM(cur:cur+npx-1,:) = repmat([-.5 0 .5],npx,1);
 
+if ~all(rowDM(:)) || ~all(colDM(:))
+    error('Could not generate x-derivative matrix. ROI may contain < 3px wide regions, try roi = fixroi(roi) before calling designgrad.')
+end
+
 Dx = sparse(rowDM,colDM,valDM);
 
 % Do the same for vertical gradient, with substitution (and similar):
@@ -129,6 +133,10 @@ npx = length(pxind);
 rowDM(cur:cur+npx-1,:) = [linInd(pxind), linInd(pxind), linInd(pxind)];
 colDM(cur:cur+npx-1,:) = [linInd(pxind-1), linInd(pxind), linInd(pxind+1)];
 valDM(cur:cur+npx-1,:) = repmat([-.5 0 .5],npx,1);
+
+if ~all(rowDM(:)) || ~all(colDM(:))
+    error('Could not generate y-derivative matrix. ROI may contain < 3px high regions, try roi = fixroi(roi) before calling designgrad.')
+end
 
 Dy = sparse(rowDM,colDM,valDM);
 
