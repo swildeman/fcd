@@ -27,11 +27,7 @@ phi_u = fcd_phasefield(fftIdef, cu);  % phi_u = cu.k(:)' * (u;v)
 
 % (2, optional) unwrap the phases
 if nargin < 4
-    if all(phi_r(:) < 3) && all(phi_u(:) < 3)
-        tryunwrap = false;
-    else
-        tryunwrap = true; 
-    end
+    tryunwrap = false;
 end
 
 if tryunwrap
