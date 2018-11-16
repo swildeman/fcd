@@ -48,6 +48,8 @@ c = c(order);
 if n < numel(inds)
    inds = inds(1:n);
    vals = vals(1:n);
+   r = r(1:n);
+   c = c(1:n);
 end
 
 if(subpixel)
